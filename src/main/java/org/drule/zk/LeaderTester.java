@@ -16,16 +16,15 @@ import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LockTester {
+public class LeaderTester {
 	private static Logger logger = LoggerFactory.getLogger(LockTester.class);
 
 	public static final int MAX_THREADS = 10;
-	public static final int MAX_LOCKS = 25000;
 
 	private final CuratorFramework client;
 	private ChildReaper reaper = null;
 
-	public LockTester(CuratorFramework curatorClient) {
+	public LeaderTester(CuratorFramework curatorClient) {
 		this.client = curatorClient;
 	}
 
@@ -40,7 +39,6 @@ public class LockTester {
 		schema.add("locks");
 
 		reaper = new ChildReaper(client, "/locks", Reaper.Mode.REAP_UNTIL_DELETE,  ChildReaper.newExecutorService(), 5000, "/reaper/leader", schema );
-		
 		reaper.start();
 	}
 	
@@ -65,18 +63,19 @@ public class LockTester {
 				try {
 					// select random lock
 					
-					int lockNum = rand.nextInt(MAX_LOCKS);
-					InterProcessLock myLock = new InterProcessSemaphoreMutex(client, String.format("/locks/ne-%05d", lockNum));
+					int lockNum = rand.nextInt(5000);
+					InterProcessLock myLock = new InterProcessSemaphoreMutex(client, String.format("/locks/fert%d", lockNum));
 
 					long start = System.currentTimeMillis();
 					myLock.acquire();
 					long stop = System.currentTimeMillis();
 					logThing(String.format("acquire lock(%02d) delay=%d", lockNum, (stop - start)));
 
-					Thread.sleep(1500);
+					Thread.sleep(3000);
 
 					myLock.release();
 
+					Thread.sleep(450);
 				} catch (InterruptedException e) {
 					logger.error("", e);
 					break;

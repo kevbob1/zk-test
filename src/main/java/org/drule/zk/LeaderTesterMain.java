@@ -2,8 +2,6 @@ package org.drule.zk;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MainApplication {
+public class LeaderTesterMain {
 
-	private static Logger logger = LoggerFactory.getLogger(MainApplication.class);
+	private static Logger logger = LoggerFactory.getLogger(LeaderTesterMain.class);
 
 	private static final class DaemonTask implements Runnable {
 		
@@ -35,7 +33,7 @@ public class MainApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(MainApplication.class);
+		SpringApplication app = new SpringApplication(LeaderTesterMain.class);
 		app.setBannerMode(Banner.Mode.OFF);
 		app.setHeadless(true);
 		app.run(args);
